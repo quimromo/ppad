@@ -1,7 +1,9 @@
 
 
 
-getFile("2.3_Employment_by_sector.txt", onDataLoaded );
+
+//getFile("2.3_Employment_by_sector.txt", onDataLoaded );
+//getFile("geojson_data.json", onGeoJsonLoaded);
 
 
 function SectorData(){
@@ -81,4 +83,31 @@ function onDataLoaded(data){
         chart.draw(data, options);
       }
 }
+//https://experiments.withgoogle.com/chrome/globe
+var geojson = {};
+var countryGeometry = {};
+function onGeoJsonLoaded(data){
+    geojson = JSON.parse(data);
+    for(var feature of geojson.features){
+        countryGeometry[feature.properties.sovereignt] = feature.geometry;
+    }
+    console.log(countryGeometry);
+}
 
+var promiseDatabase = new Promise(function(resolve){
+    getFile("2.3_Employment_by_sector.txt", function(data){
+        onDataLoaded(data);
+        resolve(countries);
+    }.bind(this) );
+}.bind(this));
+
+var promiseGeometry = new Promise(function(resolve){
+    getFile("geojson_data.json", function(data){
+        onGeoJsonLoaded(data);
+        resolve(countryGeometry);
+    }.bind(this));
+}.bind(this));
+
+var all = Promise.all([promiseDatabase, promiseGeometry]).then(function([database, geometry]){
+    
+});
