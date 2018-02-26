@@ -153,31 +153,42 @@ var all = Promise.all([promiseDatabase, promiseGeometry]).then(function([databas
         }
     }
 
-    var latitudeSamples = 180;
-    var longitudeSamples = 360;
-    var minLat = -90.0;
-    var maxLat = 90.0;
-    var minLong = 0.0;
-    var maxLong = 360.0;
-
-    var points = [];
-    for( var i = 0; i <= latitudeSamples; ++i){
-        var lat = minLat + (maxLat - minLat) * (i/latitudeSamples);
-        for( var j = 0; j < longitudeSamples; ++j){
-            var long = minLong + (maxLong - minLong) * (j/longitudeSamples);
-            points.push( [long, lat] );
-        }
+    var maxArea = 0;
+    for( var countryName in countryData ){
+        var country = countryData[countryName];
+        country.area = turf.area(country.geometry);
+        maxArea = Math.max(maxArea, country.area);
     }
+    var agricultureMen2016 = [];
+    for( var countryName in countryData ){
+        var country = countryData[countryName];
+        var bbox = turf.bbox(country.geometry);
+        var numPoints = Math.max( Math.round( 500 * country.area / maxArea ), 6 );
 
-    for(var p of points){
-        for( var country in countryData){
-            if( gju.pointInPolygon({"type":"Point","coordinates":p}, countryData[country].geometry ) ){
-                countryData[country].points.push(p);
-                break;
+        for(var i = 0; i < numPoints;){
+            var point = turf.randomPosition(bbox);
+            var pf = turf.pointsWithinPolygon( turf.points([point]), country.geometry );
+            if( pf.features.length > 0 ){
+                country.points.push(point);
+                if( i % 6 == 0){
+                    agricultureMen2016.push(point[1]);
+                    agricultureMen2016.push(point[0]);
+                    agricultureMen2016.push( country.data.agriculture.male["2016"] * 0.01 );
+                }
+                ++i;
             }
         }
     }
-    console.log(countryData);
-    //console.log(points);
+
+    var container = document.getElementById( "globe-container" );
+    // Make the globe
+    var globe = new DAT.Globe( container );
+    globe.addData( agricultureMen2016, {format: 'magnitude', name: "agricultureMen2016"} );
+
+    // Create the geometry
+    globe.createPoints();
+
+    // Begin animation
+    globe.animate();
 
 });
