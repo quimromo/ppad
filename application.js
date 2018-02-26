@@ -160,30 +160,78 @@ var all = Promise.all([promiseDatabase, promiseGeometry]).then(function([databas
         maxArea = Math.max(maxArea, country.area);
     }
     var agricultureMen2016 = [];
+    var agricultureWomen2016 = [];
+
+    var datas = new CountryData();
+    var sectors = ["agriculture", "industry", "services"];
+    var genres = ["male", "female"];
+    var colors = {
+        "agriculture":{
+            "male": new THREE.Color(0.0, 0.9, 0.0),
+            "female": new THREE.Color(0.4, 1.0, 0.4)
+        },
+        "industry":{
+            "male": new THREE.Color(0.9, 0.0, 0.0),
+            "female": new THREE.Color(1.0, 0.4, 0.4)
+        },
+        "services":{
+            "male": new THREE.Color(0.0, 0.0, 0.9),
+            "female": new THREE.Color(0.4, 0.4, 1.0)
+        },
+    }
+
     for( var countryName in countryData ){
         var country = countryData[countryName];
         var bbox = turf.bbox(country.geometry);
         var numPoints = Math.max( Math.round( 500 * country.area / maxArea ), 6 );
-
-        for(var i = 0; i < numPoints;){
-            var point = turf.randomPosition(bbox);
-            var pf = turf.pointsWithinPolygon( turf.points([point]), country.geometry );
-            if( pf.features.length > 0 ){
-                country.points.push(point);
-                if( i % 6 == 0){
-                    agricultureMen2016.push(point[1]);
-                    agricultureMen2016.push(point[0]);
-                    agricultureMen2016.push( country.data.agriculture.male["2016"] * 0.01 );
+        var pointsPerSectorGenre = {};
+        for( var sector of sectors ){
+            pointsPerSectorGenre[sector] = {};
+            for (var genre of genres ){
+                pointsPerSectorGenre[sector][genre] = Math.max( Math.round(numPoints * 0.5 * country.data[sector][genre]["2016"] * 0.01), 1);
+                for(var i = 0; i < pointsPerSectorGenre[sector][genre];){
+                    var point = turf.randomPosition(bbox);
+                    var pf = turf.pointsWithinPolygon( turf.points([point]), country.geometry );
+                    if( pf.features.length > 0 ){
+                        country.points.push(point);
+                        var dataIdx = i % 6;
+                        
+                        if( datas[sector][genre]["2016"] == 0 ){
+                            datas[sector][genre]["2016"] = [];
+                        }
+                        datas[sector][genre]["2016"].push(point[1]);
+                        datas[sector][genre]["2016"].push(point[0]);
+                        datas[sector][genre]["2016"].push( country.data[sector][genre]["2016"] * 0.0002 );
+                        ++i;
+                    }
                 }
-                ++i;
             }
         }
+
+
+
     }
 
     var container = document.getElementById( "globe-container" );
     // Make the globe
     var globe = new DAT.Globe( container );
-    globe.addData( agricultureMen2016, {format: 'magnitude', name: "agricultureMen2016"} );
+
+    var subgeo = null;
+    for( var sector of sectors){
+        for( var genre of genres){
+            if( subgeo ){
+                globe.addDataToSubgeo( datas[sector][genre]["2016"], {format: 'magnitude', name: "agricultureMen2016", colorFunc : function(val, idx){
+                    return colors[sector][genre];
+                }.bind(this)}, subgeo );
+            }
+            else{
+                subgeo = globe.addData( datas[sector][genre]["2016"], {format: 'magnitude', name: "agricultureMen2016", colorFunc : function(val, idx){
+                    return colors[sector][genre];
+                }.bind(this)} );
+            }
+
+        }
+    }
 
     // Create the geometry
     globe.createPoints();

@@ -173,10 +173,10 @@ DAT.Globe = function(container, opts) {
     opts.format = opts.format || 'magnitude'; // other option is 'legend'
     if (opts.format === 'magnitude') {
       step = 3;
-      colorFnWrapper = function(data, i) { return colorFn(data[i+2]); }
+      colorFnWrapper = opts.colorFunc || function(data, i) { return colorFn(data[i+2]); }
     } else if (opts.format === 'legend') {
       step = 4;
-      colorFnWrapper = function(data, i) { return colorFn(data[i+3]); }
+      colorFnWrapper = opts.colorFunc || function(data, i) { return colorFn(data[i+3]); }
     } else {
       throw('error: format not supported: '+opts.format);
     }
@@ -214,7 +214,32 @@ DAT.Globe = function(container, opts) {
     } else {
       this._baseGeometry = subgeo;
     }
+    return subgeo;
+  };
 
+  function addDataToSubgeo(data, opts, subgeo) {
+    var lat, lng, size, color, i, step, colorFnWrapper;
+
+    opts.animated = opts.animated || false;
+    this.is_animated = opts.animated;
+    opts.format = opts.format || 'magnitude'; // other option is 'legend'
+    if (opts.format === 'magnitude') {
+      step = 3;
+      colorFnWrapper = opts.colorFunc || function(data, i) { return colorFn(data[i+2]); }
+    } else if (opts.format === 'legend') {
+      step = 4;
+      colorFnWrapper = opts.colorFunc || function(data, i) { return colorFn(data[i+3]); }
+    } else {
+      throw('error: format not supported: '+opts.format);
+    }
+    for (i = 0; i < data.length; i += step) {
+      lat = data[i];
+      lng = data[i + 1];
+      color = colorFnWrapper(data,i);
+      size = data[i + 2];
+      size = size*200;
+      addPoint(lat, lng, size, color, subgeo);
+    }
   };
 
   function createPoints() {
@@ -257,6 +282,8 @@ DAT.Globe = function(container, opts) {
     point.lookAt(mesh.position);
 
     point.scale.z = Math.max( size, 0.1 ); // avoid non-invertible matrix
+    point.scale.x = 5.0;
+    point.scale.y = 5.0;
     point.updateMatrix();
 
     for (var i = 0; i < point.geometry.faces.length; i++) {
@@ -399,6 +426,7 @@ DAT.Globe = function(container, opts) {
   });
 
   this.addData = addData;
+  this.addDataToSubgeo = addDataToSubgeo;
   this.createPoints = createPoints;
   this.renderer = renderer;
   this.scene = scene;
