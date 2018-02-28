@@ -104,7 +104,8 @@ DAT.Globe = function(container, opts) {
     shader = Shaders['earth'];
     uniforms = THREE.UniformsUtils.clone(shader.uniforms);
 
-    uniforms['texture'].value = THREE.ImageUtils.loadTexture(imgDir+'world.jpg');
+    var textureFile = "political_texture.png";//'world.jpg';
+    uniforms['texture'].value = THREE.ImageUtils.loadTexture(imgDir + textureFile);
 
     material = new THREE.ShaderMaterial({
 
@@ -282,8 +283,8 @@ DAT.Globe = function(container, opts) {
     point.lookAt(mesh.position);
 
     point.scale.z = Math.max( size, 0.1 ); // avoid non-invertible matrix
-    point.scale.x = 5.0;
-    point.scale.y = 5.0;
+    point.scale.x = 1.0;
+    point.scale.y = 1.0;
     point.updateMatrix();
 
     for (var i = 0; i < point.geometry.faces.length; i++) {
