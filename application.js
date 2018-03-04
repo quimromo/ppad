@@ -166,17 +166,30 @@ var all = Promise.all([promiseDatabase, promiseGeometry]).then(function([databas
     var sectors = ["agriculture", "industry", "services"];
     var genres = ["male", "female"];
     var colors = {
+        // "agriculture":{
+        //     "male": new THREE.Color(0.0, 0.8, 0.0),
+        //     "female": new THREE.Color(0.5, 1.0, 0.5)
+        // },
+        // "industry":{
+        //     "male": new THREE.Color(0.8, 0.0, 0.0),
+        //     "female": new THREE.Color(1.0, 0.5, 0.5)
+        // },
+        // "services":{
+        //     "male": new THREE.Color(0.1, 0.4, 1.0),
+        //     "female": new THREE.Color(0.3, 0.9, 1.0)
+        // },
         "agriculture":{
-            "male": new THREE.Color(0.0, 0.8, 0.0),
-            "female": new THREE.Color(0.5, 1.0, 0.5)
+            "male": new THREE.Color(0.0, 0.4, 0.2),
+            "female": new THREE.Color(0.0, 0.55, 0.25)
         },
         "industry":{
-            "male": new THREE.Color(0.8, 0.0, 0.0),
-            "female": new THREE.Color(1.0, 0.5, 0.5)
+            "male": new THREE.Color(0.5, 0.4, 0.0),
+            "female": new THREE.Color(0.85, 0.6, 0.0)
         },
         "services":{
-            "male": new THREE.Color(0.1, 0.4, 1.0),
-            "female": new THREE.Color(0.3, 0.9, 1.0)
+            "male": new THREE.Color(0.4, 0.0, 0.0),
+            "female": new THREE.Color(0.75, 0.0, 0.0)
+
         },
     }
     console.log(countryData);
