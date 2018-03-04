@@ -62,7 +62,7 @@ DAT.Globe = function(container, opts) {
         'void main() {',
           'float patY = latitudeToPattersonY( vUv.y * PI - 0.5 * PI  ) * 0.5 / 1.79085720303274 + 0.5;',
           'float water = texture2D( waterMask, vUv).x;',
-          'vec4 political = texture2D( texturePolitical, vec2(vUv.x * 1.0, patY) ).xyzw;',
+          'vec4 political = texture2D( texturePolitical, vec2(vUv.x, patY) ).xyzw * 0.5 + 0.125 * ( texture2D( texturePolitical, vec2(vUv.x + 0.0002, patY) ).xyzw + texture2D( texturePolitical, vec2(vUv.x - 0.0002, patY) ).xyzw + texture2D( texturePolitical, vec2(vUv.x, patY + 0.0002) ).xyzw + texture2D( texturePolitical, vec2(vUv.x, patY - 0.0002) ).xyzw );',
           'vec3 color = texture2D( textureEarth, vUv ).xyz;',
           'vec3 politicalOverlay = ( political.xyz - water * step( 0.98, 1.0 - length(political.xyz - seaColPol) ) * seaColPol ) * political.w*political.w;//pow(political.w,3.0) * 2.0;',
           'vec3 diffuse =  color * 0.15 + politicalOverlay;',
