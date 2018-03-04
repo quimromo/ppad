@@ -64,8 +64,8 @@ DAT.Globe = function(container, opts) {
           'float water = texture2D( waterMask, vUv).x;',
           'vec4 political = texture2D( texturePolitical, vec2(vUv.x * 1.0, patY) ).xyzw;',
           'vec3 color = texture2D( textureEarth, vUv ).xyz;',
-          'vec3 politicalOverlay = ( political.xyz - water * step( 0.98, 1.0 - length(political.xyz - seaColPol) ) * seaColPol ) * pow(political.w,3.0) * 2.0;',
-          'vec3 diffuse =  color * (0.75) + politicalOverlay;',
+          'vec3 politicalOverlay = ( political.xyz - water * step( 0.98, 1.0 - length(political.xyz - seaColPol) ) * seaColPol ) * political.w*political.w;//pow(political.w,3.0) * 2.0;',
+          'vec3 diffuse =  color * 0.15 + politicalOverlay;',
           'float intensity = 1.05 - dot( vNormal, vec3( 0.0, 0.0, 1.0 ) );',
           'vec3 atmosphere = vec3( 1.0, 1.0, 1.0 ) * pow( intensity, 3.0 );',
           '//vec3 borderColor = smoothstep(0.0, 0.75, borderSample) * vec3(1.0, 1.0, 0.2);',
@@ -129,7 +129,7 @@ DAT.Globe = function(container, opts) {
     uniforms = THREE.UniformsUtils.clone(shader.uniforms);
 
     var texturePolitical = "Political_Map_Pat2.png"//"world.jpg"; //"political_texture.png";
-    var textureColor = "world.topo.bathy.200411.3x5400x2700.jpg";
+    var textureColor = "world.topo.bathy.200411.3x5400x2700.jpg";//"world.jpg";//
     var waterMask = "water_8k.png";
   
     uniforms['textureEarth'].value = THREE.ImageUtils.loadTexture(imgDir + textureColor);
