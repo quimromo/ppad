@@ -179,16 +179,16 @@ var all = Promise.all([promiseDatabase, promiseGeometry]).then(function([databas
         //     "female": new THREE.Color(0.3, 0.9, 1.0)
         // },
         "agriculture":{
-            "male": new THREE.Color(0.0, 0.4, 0.2),
-            "female": new THREE.Color(0.0, 0.55, 0.25)
+            "male": new THREE.Color(0.05, 0.9, 0.3),
+            "female": new THREE.Color(0.1, 1.0, 0.5)
         },
         "industry":{
-            "male": new THREE.Color(0.5, 0.4, 0.0),
-            "female": new THREE.Color(0.85, 0.6, 0.0)
+            "male": new THREE.Color(0.75, 0.6, 0.15),
+            "female": new THREE.Color(1.0, 0.8, 0.3)
         },
         "services":{
-            "male": new THREE.Color(0.4, 0.0, 0.0),
-            "female": new THREE.Color(0.75, 0.0, 0.0)
+            "male": new THREE.Color(0.7, 0.1, 0.1),
+            "female": new THREE.Color(1.0, 0.15, 0.15)
 
         },
     }
