@@ -167,18 +167,19 @@ var all = Promise.all([promiseDatabase, promiseGeometry]).then(function([databas
     var genres = ["male", "female"];
     var colors = {
         "agriculture":{
-            "male": new THREE.Color(0.0, 0.9, 0.0),
+            "male": new THREE.Color(0.0, 0.8, 0.0),
             "female": new THREE.Color(0.5, 1.0, 0.5)
         },
         "industry":{
-            "male": new THREE.Color(0.9, 0.0, 0.0),
-            "female": new THREE.Color(1.0, 0.4, 0.4)
+            "male": new THREE.Color(0.8, 0.0, 0.0),
+            "female": new THREE.Color(1.0, 0.5, 0.5)
         },
         "services":{
             "male": new THREE.Color(0.0, 0.0, 0.9),
-            "female": new THREE.Color(0.4, 0.4, 1.0)
+            "female": new THREE.Color(0.5, 0.5, 1.0)
         },
     }
+    console.log(countryData);
 
     for( var countryName in countryData ){
         var country = countryData[countryName];
@@ -209,8 +210,27 @@ var all = Promise.all([promiseDatabase, promiseGeometry]).then(function([databas
         //     }
         // }
 
-        var center = turf.pointOnFeature(country.geometry);
-        var offset = -0.75;
+        var center = null; 
+        if(country.geometry.type == "MultiPolygon"){
+            var biggestArea = 0;
+            var biggestPoly = null;
+            for( var polyCoords of country.geometry.coordinates){
+                var poly = turf.polygon(polyCoords);
+                var area = turf.area(poly);
+                if( area > biggestArea){
+                    biggestArea = area;
+                    biggestPoly = poly;
+                }
+            }
+            center = turf.pointOnFeature(biggestPoly);
+        }
+        else{
+            center = turf.pointOnFeature(country.geometry);
+        }
+
+
+        var delta = 0.3 / Math.abs(Math.cos(center.geometry.coordinates[1] * Math.PI / 180.0 ));
+        var offset = -delta * 5.0 / 2.0;
         for( var sector of sectors ){
             for (var genre of genres ){
                 if( datas[sector][genre]["2016"] == 0 ){
@@ -219,7 +239,7 @@ var all = Promise.all([promiseDatabase, promiseGeometry]).then(function([databas
                 datas[sector][genre]["2016"].push(center.geometry.coordinates[1]);
                 datas[sector][genre]["2016"].push(center.geometry.coordinates[0] + offset);
                 datas[sector][genre]["2016"].push( country.data[sector][genre]["2016"] * 0.005 );
-                offset += 0.3;   
+                offset += delta;   
             }
         }
 
