@@ -175,8 +175,8 @@ var all = Promise.all([promiseDatabase, promiseGeometry]).then(function([databas
             "female": new THREE.Color(1.0, 0.5, 0.5)
         },
         "services":{
-            "male": new THREE.Color(0.0, 0.0, 0.9),
-            "female": new THREE.Color(0.5, 0.5, 1.0)
+            "male": new THREE.Color(0.1, 0.4, 1.0),
+            "female": new THREE.Color(0.3, 0.9, 1.0)
         },
     }
     console.log(countryData);
