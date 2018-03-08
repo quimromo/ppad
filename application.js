@@ -240,6 +240,18 @@ var all = Promise.all([promiseDatabase, promiseGeometry]).then(function([databas
         var y = document.getElementById('year'+years[i]);
         y.addEventListener('mouseover', settime(globe,i), false);
     }
+
+    var legend = document.getElementById("legend");
+    for( var sector in colors ){
+        for( var gender in colors[sector]){
+            var genderString = gender == "male" ? "men" : "women";
+            var legendEntry = legend.querySelector("#" + genderString + "-" + sector );
+            var legendItemText = legendEntry.querySelector(".legend-item-text");
+            legendItemText.textContent = "% of " + genderString + " that work in " + sector;
+            var colorBox = legendEntry.querySelector(".legend-color-box");
+            colorBox.style["background-color"] = colors[sector][gender].getHexString();
+        }
+    }
       
     TWEEN.start();
 

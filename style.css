@@ -78,6 +78,19 @@ html {
     color: #fff;
   }
 
+  #legend {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+  }
+  #legend .legend-color-box {
+      width: 1rem;
+      height: 1rem;
+      float:left;
+      margin-right: 0.5rem;
+      background-color: chartreuse;
+  }
+
   #ce span {
     display: none;
   }
