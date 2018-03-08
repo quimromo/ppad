@@ -313,8 +313,8 @@ DAT.Globe = function(container, opts) {
     point.lookAt(mesh.position);
 
     point.scale.z = Math.max( size, 0.1 ); // avoid non-invertible matrix
-    point.scale.x = 1.0;
-    point.scale.y = 1.0;
+    point.scale.x = 1.2;
+    point.scale.y = 1.2;
     point.updateMatrix();
 
     for (var i = 0; i < point.geometry.faces.length; i++) {

@@ -82,6 +82,14 @@ html {
       position: absolute;
       bottom: 20px;
       left: 20px;
+      background-color: rgb(10, 10, 50);
+      opacity: 0.85;
+      padding: 0.5rem;
+      border: 1px solid aqua;
+      border-radius: 0.5rem;
+  }
+  #legend .legend-entry{
+    opacity: 1.0;
   }
   #legend .legend-color-box {
       width: 1rem;
@@ -89,6 +97,10 @@ html {
       float:left;
       margin-right: 0.5rem;
       background-color: chartreuse;
+      opacity: 1.0;
+  }
+  #leged .legend-item-text{
+    opacity: 1.0;
   }
 
   #ce span {
