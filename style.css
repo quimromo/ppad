@@ -52,7 +52,7 @@ html {
   #title {
     position: absolute;
     top: 20px;
-    width: 270px;
+    width: auto;
     left: 20px;
     background-color: rgba(0,0,0,0.2);
     border-radius: 3px;

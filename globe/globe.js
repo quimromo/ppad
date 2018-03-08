@@ -212,17 +212,17 @@ DAT.Globe = function(container, opts) {
     }
 
     if (opts.animated) {
-      if (this._baseGeometry === undefined) {
-        this._baseGeometry = new THREE.Geometry();
-        for (i = 0; i < data.length; i += step) {
-          lat = data[i];
-          lng = data[i + 1];
-//        size = data[i + 2];
-          color = colorFnWrapper(data,i);
-          size = 0;
-          addPoint(lat, lng, size, color, this._baseGeometry);
-        }
-      }
+//       if (this._baseGeometry === undefined) {
+//         this._baseGeometry = new THREE.Geometry();
+//         for (i = 0; i < data.length; i += step) {
+//           lat = data[i];
+//           lng = data[i + 1];
+// //        size = data[i + 2];
+//           color = colorFnWrapper(data,i);
+//           size = 0;
+//           addPoint(lat, lng, size, color, this._baseGeometry);
+//         }
+//       }
       if(this._morphTargetId === undefined) {
         this._morphTargetId = 0;
       } else {
@@ -240,6 +240,9 @@ DAT.Globe = function(container, opts) {
       addPoint(lat, lng, size, color, subgeo);
     }
     if (opts.animated) {
+      if(this._baseGeometry === undefined){
+        this._baseGeometry = subgeo;
+      }
       this._baseGeometry.morphTargets.push({'name': opts.name, vertices: subgeo.vertices});
     } else {
       this._baseGeometry = subgeo;
