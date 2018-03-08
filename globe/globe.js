@@ -62,12 +62,12 @@ DAT.Globe = function(container, opts) {
         'void main() {',
           'float patY = latitudeToPattersonY( vUv.y * PI - 0.5 * PI  ) * 0.5 / 1.79085720303274 + 0.5;',
           'float water = texture2D( waterMask, vUv).x;',
-          'vec4 political = texture2D( texturePolitical, vec2(vUv.x, patY) ).xyzw * 0.5 + 0.125 * ( texture2D( texturePolitical, vec2(vUv.x + 0.0002, patY) ).xyzw + texture2D( texturePolitical, vec2(vUv.x - 0.0002, patY) ).xyzw + texture2D( texturePolitical, vec2(vUv.x, patY + 0.0002) ).xyzw + texture2D( texturePolitical, vec2(vUv.x, patY - 0.0002) ).xyzw );',
+          'vec4 political = texture2D( texturePolitical, vec2(vUv.x, patY) ).xyzw;// * 0.5 + 0.125 * ( texture2D( texturePolitical, vec2(vUv.x + 0.0002, patY) ).xyzw + texture2D( texturePolitical, vec2(vUv.x - 0.0002, patY) ).xyzw + texture2D( texturePolitical, vec2(vUv.x, patY + 0.0002) ).xyzw + texture2D( texturePolitical, vec2(vUv.x, patY - 0.0002) ).xyzw );',
           'vec3 color = texture2D( textureEarth, vUv ).xyz;',
-          'vec3 politicalOverlay = ( political.xyz - water * step( 0.98, 1.0 - length(political.xyz - seaColPol) ) * seaColPol ) * political.w*political.w;//pow(political.w,3.0) * 2.0;',
+          'vec3 politicalOverlay = ( political.xyz - water * smoothstep( 0.90, 1.0, 1.0 - length(political.xyz - seaColPol) ) * seaColPol ) * smoothstep(0.0, 1.0,political.w*political.w);//pow(political.w,3.0) * 2.0;',
           'vec3 diffuse =  (color * 0.3 + politicalOverlay) + vec3(0.0, 0.0, 0.1);',
           'float intensity = 1.05 - dot( vNormal, vec3( 0.0, 0.0, 1.0 ) );',
-          'vec3 atmosphere = vec3( 1.0, 1.0, 1.0 ) * pow( intensity, 3.0 );',
+          'vec3 atmosphere = vec3( 0.7, 0.7, 1.0 ) * pow( intensity, 3.0 );',
           '//vec3 borderColor = smoothstep(0.0, 0.75, borderSample) * vec3(1.0, 1.0, 0.2);',
           'gl_FragColor = vec4( diffuse + atmosphere, 1.0 );',
         '}'
@@ -86,7 +86,7 @@ DAT.Globe = function(container, opts) {
         'varying vec3 vNormal;',
         'void main() {',
           'float intensity = pow( 0.8 - dot( vNormal, vec3( 0, 0, 1.0 ) ), 12.0 );',
-          'gl_FragColor = vec4( 1.0, 1.0, 1.0, 1.0 ) * intensity;',
+          'gl_FragColor = vec4( 0.7, 0.7, 1.0, 1.0 ) * intensity;',
         '}'
       ].join('\n')
     }
@@ -128,7 +128,7 @@ DAT.Globe = function(container, opts) {
     shader = Shaders['earth'];
     uniforms = THREE.UniformsUtils.clone(shader.uniforms);
 
-    var texturePolitical = "Political_Map_Pat2.png"//"world.jpg"; //"political_texture.png";
+    var texturePolitical = "Political_Map_Pat2_2power.png"//"world.jpg"; //"political_texture.png";
     var textureColor = "world.topo.bathy.200411.3x5400x2700.jpg";//"world.jpg";//
     var waterMask = "water_8k.png";
   
