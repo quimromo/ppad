@@ -1,8 +1,48 @@
 <html>
   <head>
+      <link rel="stylesheet" type="text/css" href="style.css">
   </head>
   <body>
     <div id="globe-container"></div>
+  
+    <div id="title">
+        Employment by sector and gender
+    </div>
+
+    <div id="currentInfo">
+      <span id="year2000" class="year">2000</span>
+      <span id="year2016" class="year">2016</span>
+    </div>
+
+    <div id="legend">
+      <div id="men-agriculture" class="legend-entry">
+        <div class="legend-color-box"></div>
+        <span class="legend-item-text">% Percentage of men that work in agriculture</span>
+      </div>
+      <div id="women-agriculture" class="legend-entry">
+          <div class="legend-color-box"></div>
+          <span class="legend-item-text">% Percentage of men that work in agriculture</span>
+      </div>
+      <div id="men-industry" class="legend-entry">
+        <div  class="legend-color-box"></div>
+        <span class="legend-item-text">% Percentage of men that work in agriculture</span>
+      </div>
+      <div id="women-industry" class="legend-entry">
+          <div  class="legend-color-box"></div>
+          <span class="legend-item-text">% Percentage of men that work in agriculture</span>
+      </div>
+      <div id="men-services" class="legend-entry">
+          <div class="legend-color-box"></div>
+          <span class="legend-item-text">% Percentage of men that work in agriculture</span>
+      </div>
+      <div id="women-services" class="legend-entry">
+          <div class="legend-color-box"></div>
+          <span class="legend-item-text">% Percentage of men that work in agriculture</span>
+      </div>
+    </div>
+  
+
+
     <!--div id="regions_div" style="width: 900px; height: 500px;"></div-->
   </body>
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -11,6 +51,7 @@
   <script src="lib/geojson-utils.js"></script>
   <script src="lib/turf.min.js"></script>
   <script src="globe/third-party/three.min.js"></script>
+  <script src="globe/third-party/Tween.js"></script>
   <script src="globe/globe.js"></script>
   <script src="getdata.js"></script>
   <script src="application.js"></script>

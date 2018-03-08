@@ -54,34 +54,6 @@ function parseDatabaseData(data){
     }
 
     return countries;
-
-
-
-    // google.charts.load('current', {
-    //     'packages':['geochart'],
-    //     // Note: you will need to get a mapsApiKey for your project.
-    //     // See: https://developers.google.com/chart/interactive/docs/basic_load_libs#load-settings
-    //     'mapsApiKey': 'AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY'
-    //   });
-    //   google.charts.setOnLoadCallback(drawRegionsMap);
-    
-    //     var displayedData = [['Country', 'Agriculture Male 2016', 'Agriculture Female 2016' ]];
-    //     for( var country in countries ){
-    //         displayedData.push( [country, countries[country].agriculture.male["2016"],
-    //         countries[country].agriculture.female["2016"]
-    //     ] );
-    //     }
-
-
-    //   function drawRegionsMap() {
-    //     var data = google.visualization.arrayToDataTable(displayedData);
-      
-    //     var options = {};
-    
-    //     var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
-    
-    //     chart.draw(data, options);
-    //   }
 }
 //https://experiments.withgoogle.com/chrome/globe
 
@@ -159,8 +131,6 @@ var all = Promise.all([promiseDatabase, promiseGeometry]).then(function([databas
         country.area = turf.area(country.geometry);
         maxArea = Math.max(maxArea, country.area);
     }
-    var agricultureMen2016 = [];
-    var agricultureWomen2016 = [];
 
     var datas = new CountryData();
     var sectors = ["agriculture", "industry", "services"];
@@ -197,32 +167,6 @@ var all = Promise.all([promiseDatabase, promiseGeometry]).then(function([databas
     for( var countryName in countryData ){
         var country = countryData[countryName];
 
-        // var bbox = turf.bbox(country.geometry);
-        // var numPoints = Math.max( Math.round( 500 * country.area / maxArea ), 6 );
-        // var pointsPerSectorGenre = {};
-        // for( var sector of sectors ){
-        //     pointsPerSectorGenre[sector] = {};
-        //     for (var genre of genres ){
-        //         pointsPerSectorGenre[sector][genre] = Math.max( Math.round(numPoints * 0.5 * country.data[sector][genre]["2016"] * 0.01), 1);
-        //         for(var i = 0; i < pointsPerSectorGenre[sector][genre];){
-        //             var point = turf.randomPosition(bbox);
-        //             var pf = turf.pointsWithinPolygon( turf.points([point]), country.geometry );
-        //             if( pf.features.length > 0 ){
-        //                 country.points.push(point);
-        //                 var dataIdx = i % 6;
-                        
-        //                 if( datas[sector][genre]["2016"] == 0 ){
-        //                     datas[sector][genre]["2016"] = [];
-        //                 }
-        //                 datas[sector][genre]["2016"].push(point[1]);
-        //                 datas[sector][genre]["2016"].push(point[0]);
-        //                 datas[sector][genre]["2016"].push( country.data[sector][genre]["2016"] * 0.0002 );
-        //                 ++i;
-        //             }
-        //         }
-        //     }
-        // }
-
         var center = null; 
         if(country.geometry.type == "MultiPolygon"){
             var biggestArea = 0;
@@ -252,38 +196,82 @@ var all = Promise.all([promiseDatabase, promiseGeometry]).then(function([databas
                 datas[sector][genre]["2016"].push(center.geometry.coordinates[1]);
                 datas[sector][genre]["2016"].push(center.geometry.coordinates[0] + offset);
                 datas[sector][genre]["2016"].push( country.data[sector][genre]["2016"] * 0.005 );
+            
+                if( datas[sector][genre]["2000"] == 0 ){
+                    datas[sector][genre]["2000"] = [];
+                }
+                datas[sector][genre]["2000"].push(center.geometry.coordinates[1]);
+                datas[sector][genre]["2000"].push(center.geometry.coordinates[0] + offset);
+                datas[sector][genre]["2000"].push( country.data[sector][genre]["2000"] * 0.005 );
+            
                 offset += delta;   
             }
         }
-
-
-
-
     }
 
     var container = document.getElementById( "globe-container" );
     // Make the globe
     var globe = new DAT.Globe( container );
 
-    var subgeo = null;
-    for( var sector of sectors){
-        for( var genre of genres){
-            if( subgeo ){
-                globe.addDataToSubgeo( datas[sector][genre]["2016"], {format: 'magnitude', name: "agricultureMen2016", colorFunc : function(val, idx){
-                    return colors[sector][genre];
-                }.bind(this)}, subgeo );
-            }
-            else{
-                subgeo = globe.addData( datas[sector][genre]["2016"], {format: 'magnitude', name: "agricultureMen2016", colorFunc : function(val, idx){
-                    return colors[sector][genre];
-                }.bind(this)} );
-            }
+    var years = ["2000", "2016"];
 
+    var settime = function(globe, t) {
+        return function() {
+            new TWEEN.Tween(globe).to({time: t/years.length},500).easing(TWEEN.Easing.Cubic.EaseOut).start();
+            var y = document.getElementById('year'+years[t]);
+            if (y.getAttribute('class') === 'year active') {
+                return;
+            }
+            var yy = document.getElementsByClassName('year');
+            for(i=0; i<yy.length; i++) {
+                yy[i].setAttribute('class','year');
+            }
+            y.setAttribute('class', 'year active');
+        };
+    };
+
+    
+    for( var year of years){
+        var subgeo = null;
+        for( var sector of sectors){
+            for( var genre of genres){
+                if( subgeo ){
+                    globe.addDataToSubgeo( datas[sector][genre][year], {format: 'magnitude', name: "data"+year, colorFunc : function(val, idx){
+                        return colors[sector][genre];
+                    }.bind(this)}, subgeo );
+                }
+                else{
+                    subgeo = globe.addData( datas[sector][genre][year], {format: 'magnitude', name: "data"+year, animated: true, colorFunc : function(val, idx){
+                        return colors[sector][genre];
+                    }.bind(this)} );
+                }
+            }
         }
     }
 
+    for(var i = 0; i<years.length; i++) {
+        var y = document.getElementById('year'+years[i]);
+        y.addEventListener('mouseover', settime(globe,i), false);
+    }
+
+    var legend = document.getElementById("legend");
+    for( var sector in colors ){
+        for( var gender in colors[sector]){
+            var genderString = gender == "male" ? "men" : "women";
+            var legendEntry = legend.querySelector("#" + genderString + "-" + sector );
+            var legendItemText = legendEntry.querySelector(".legend-item-text");
+            legendItemText.textContent = "% of " + genderString + " that work in " + sector;
+            var colorBox = legendEntry.querySelector(".legend-color-box");
+            colorBox.style["background-color"] = colors[sector][gender].getHexString();
+        }
+    }
+      
+    TWEEN.start();
+
     // Create the geometry
     globe.createPoints();
+
+    settime(globe,0)();
 
     // Begin animation
     globe.animate();
