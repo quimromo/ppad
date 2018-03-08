@@ -250,8 +250,6 @@ DAT.Globe = function(container, opts) {
   function addDataToSubgeo(data, opts, subgeo) {
     var lat, lng, size, color, i, step, colorFnWrapper;
 
-    opts.animated = opts.animated || false;
-    this.is_animated = opts.animated;
     opts.format = opts.format || 'magnitude'; // other option is 'legend'
     if (opts.format === 'magnitude') {
       step = 3;
